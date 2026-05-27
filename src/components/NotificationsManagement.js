@@ -46,13 +46,20 @@ const NotificationsManagement = ({ showToast }) => {
     try {
       const method = editingId ? 'PUT' : 'POST';
       const url = editingId ? `${API_URL}/api/notifications/${editingId}` : `${API_URL}/api/notifications`;
+      // Convert local datetime-local values to UTC ISO strings to avoid timezone shifts
+      const payload = {
+        ...form,
+        startDate: new Date(form.startDate).toISOString(),
+        endDate: new Date(form.endDate).toISOString()
+      };
+
       const res = await fetch(url, {
         method,
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(form)
+        body: JSON.stringify(payload)
       });
       if (!res.ok) throw new Error('Request failed');
       await fetchNotifications();
